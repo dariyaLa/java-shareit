@@ -10,12 +10,12 @@ import java.util.stream.Collectors;
 @Repository
 public class ItemRepository implements RepositoryMain<Item> {
 
-    private Map<Long, Item> items = new HashMap<>();
+    private final Map<Long, Item> items = new HashMap<>();
     private long id = 0;
 
     @Override
     public Item save(Item item) {
-        if (!items.containsValue(items)) {
+        if (!items.containsKey(item.getId())) {
             item.setId(getId());
             items.put(item.getId(), item);
             return item;
