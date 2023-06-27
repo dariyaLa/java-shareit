@@ -21,8 +21,7 @@ public class UserRepositoryImpl implements RepositoryMain<User> {
         return null;
     }
 
-    @Override
-    public User find(long id) {
+    public User findId(long id) {
         return users.get(id);
     }
 
@@ -59,7 +58,7 @@ public class UserRepositoryImpl implements RepositoryMain<User> {
 
     @Override
     public void delete(long id) {
-        if (find(id) != null) {
+        if (findId(id) != null) {
             users.remove(id);
         }
     }

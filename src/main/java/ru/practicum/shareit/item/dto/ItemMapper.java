@@ -1,14 +1,12 @@
 package ru.practicum.shareit.item.dto;
 
-import org.springframework.stereotype.Service;
 import ru.practicum.shareit.item.model.Item;
 
 import java.util.Optional;
 
-@Service
-public class ItemMapper {
+public final class ItemMapper {
 
-    public Optional<ItemDto> toDto(Item item) {
+    public static Optional<ItemDto> toDto(Item item) {
         if (item == null) {
             return Optional.empty();
         }
@@ -22,7 +20,7 @@ public class ItemMapper {
                 .build());
     }
 
-    public Item toEntity(ItemDto dto) {
+    public static Item toEntity(ItemDto dto) {
         return Item.builder()
                 .id(dto.getId())
                 .name(dto.getName())

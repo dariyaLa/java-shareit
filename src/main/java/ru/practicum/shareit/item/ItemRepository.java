@@ -1,6 +1,7 @@
 package ru.practicum.shareit.item;
 
 import org.springframework.stereotype.Repository;
+import org.springframework.util.StringUtils;
 import ru.practicum.shareit.RepositoryMain;
 import ru.practicum.shareit.item.model.Item;
 
@@ -45,7 +46,7 @@ public class ItemRepository implements RepositoryMain<Item> {
     }
 
     @Override
-    public Item find(long id) {
+    public Item findId(long id) {
         return items.get(id);
     }
 
@@ -56,7 +57,7 @@ public class ItemRepository implements RepositoryMain<Item> {
 
     @Override
     public Collection<Item> findAll() {
-        return null;
+        return items.values();
     }
 
     public Collection<Item> findAll(long userId) {
@@ -68,7 +69,7 @@ public class ItemRepository implements RepositoryMain<Item> {
 
     public Collection<Item> findAll(long userId, String text) {
         List<Item> itemList = new ArrayList<Item>(items.values());
-        if (text == null || text.equals("")) {
+        if (StringUtils.isEmpty(text)) {
             return new ArrayList<Item>();
         }
         return itemList.stream()
@@ -80,7 +81,7 @@ public class ItemRepository implements RepositoryMain<Item> {
 
     @Override
     public void delete(long id) {
-
+        items.remove(id);
     }
 
     private long getId() {

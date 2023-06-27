@@ -1,6 +1,6 @@
 package ru.practicum.shareit.user;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.ServiceMain;
 
@@ -9,21 +9,19 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
+@AllArgsConstructor
 public class UserServiceImpl implements ServiceMain<UserDto, User> {
 
-    @Autowired
     UserRepositoryImpl userRepository;
-    @Autowired
-    UserMapper userMapper;
 
     @Override
     public Optional<UserDto> save(User user) {
-        return userMapper.toDto(userRepository.save(user));
+        return UserMapper.toDto(userRepository.save(user));
     }
 
     @Override
     public Optional<UserDto> find(long id) {
-        return userMapper.toDto(userRepository.find(id));
+        return UserMapper.toDto(userRepository.findId(id));
     }
 
     @Override
@@ -32,13 +30,13 @@ public class UserServiceImpl implements ServiceMain<UserDto, User> {
         if (user.isEmpty()) {
             return Optional.empty();
         }
-        return userMapper.toDto(user.get());
+        return UserMapper.toDto(user.get());
     }
 
     @Override
     public Collection<UserDto> findAll() {
         return userRepository.findAll().stream()
-                .map(user -> userMapper.toDto(user).get())
+                .map(user -> UserMapper.toDto(user).get())
                 .collect(Collectors.toList());
     }
 
@@ -49,6 +47,6 @@ public class UserServiceImpl implements ServiceMain<UserDto, User> {
 
     @Override
     public Optional<UserDto> update(User user, User userNewData) {
-        return userMapper.toDto(userRepository.update(user, userNewData));
+        return UserMapper.toDto(userRepository.update(user, userNewData));
     }
 }

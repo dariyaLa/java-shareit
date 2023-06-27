@@ -9,7 +9,7 @@ public interface RepositoryMain<T> {
 
     T update(T entity, T updateData);
 
-    T find(long id);
+    T findId(long id);
 
     Optional<T> find(String str);
 

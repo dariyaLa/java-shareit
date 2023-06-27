@@ -1,6 +1,6 @@
 package ru.practicum.shareit.item;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.ServiceMain;
 import ru.practicum.shareit.item.dto.ItemDto;
@@ -12,26 +12,24 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
+@AllArgsConstructor
 public class ItemService implements ServiceMain<ItemDto, Item> {
 
-    @Autowired
     ItemRepository itemRepository;
-    @Autowired
-    ItemMapper itemMapper;
 
     @Override
     public Optional<ItemDto> save(Item item) {
-        return itemMapper.toDto(itemRepository.save(item));
+        return ItemMapper.toDto(itemRepository.save(item));
     }
 
     @Override
     public Optional<ItemDto> update(Item item, Item newEntity) {
-        return itemMapper.toDto(itemRepository.update(item, newEntity));
+        return ItemMapper.toDto(itemRepository.update(item, newEntity));
     }
 
     @Override
     public Optional<ItemDto> find(long id) {
-        return itemMapper.toDto(itemRepository.find(id));
+        return ItemMapper.toDto(itemRepository.findId(id));
     }
 
     @Override
@@ -41,25 +39,27 @@ public class ItemService implements ServiceMain<ItemDto, Item> {
 
     @Override
     public Collection<ItemDto> findAll() {
-        return null;
+        return itemRepository.findAll().stream()
+                .map(item -> ItemMapper.toDto(item).get())
+                .collect(Collectors.toList());
     }
 
     public Collection<ItemDto> findAll(long userId) {
 
         return itemRepository.findAll(userId).stream()
-                .map(item -> itemMapper.toDto(item).get())
+                .map(item -> ItemMapper.toDto(item).get())
                 .collect(Collectors.toList());
     }
 
     public Collection<ItemDto> findAll(long userId, String text) {
 
         return itemRepository.findAll(userId, text).stream()
-                .map(item -> itemMapper.toDto(item).get())
+                .map(item -> ItemMapper.toDto(item).get())
                 .collect(Collectors.toList());
     }
 
     @Override
     public void delete(long id) {
-
+        itemRepository.delete(id);
     }
 }

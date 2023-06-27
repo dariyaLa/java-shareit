@@ -217,7 +217,6 @@
 					<plugin>
 						<groupId>com.github.spotbugs</groupId>
 						<artifactId>spotbugs-maven-plugin</artifactId>
-						<version>4.7.0.0</version>
 					</plugin>
 				</plugins>
 			</build>
@@ -226,7 +225,6 @@
 					<plugin>
 						<groupId>com.github.spotbugs</groupId>
 						<artifactId>spotbugs-maven-plugin</artifactId>
-						<version>4.7.0.0</version>
 					</plugin>
 				</plugins>
 			</reporting>

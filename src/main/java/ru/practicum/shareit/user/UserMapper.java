@@ -1,17 +1,12 @@
 package ru.practicum.shareit.user;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import java.util.Optional;
 
-@Service
-class UserMapper {
+final class UserMapper {
 
-    @Autowired
-    private UserRepositoryImpl userRepository;
+    private static UserRepositoryImpl userRepository;
 
-    public Optional<UserDto> toDto(User user) {
+    public static Optional<UserDto> toDto(User user) {
         if (user == null) {
             return Optional.empty();
         }
@@ -22,20 +17,23 @@ class UserMapper {
                 .build());
     }
 
-    public User toEntity(UserDto dto) {
+    public static User toEntity(UserDto dto) {
         return User.builder()
-                .id(getId(dto)) //здесь 0, надо преобразовать
+                .id(getId(dto))
                 .name(dto.getName())
                 .email(dto.getEmail())
                 .build();
     }
 
 
-    private long getId(UserDto dto) {
-        if (userRepository.find(dto.getEmail()).isEmpty()) {
-            return 0;
+    private static long getId(UserDto dto) {
+        if (dto.getId() == 0) {
+            if (userRepository == null || userRepository.find(dto.getEmail()).isEmpty()) {
+                return 0;
+            }
+            return userRepository.find(dto.getEmail()).get().getId();
         }
-        return userRepository.find(dto.getEmail()).get().getId();
+        return dto.getId();
     }
 
 

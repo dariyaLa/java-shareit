@@ -1,7 +1,8 @@
 package ru.practicum.shareit.item;
 
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.exeption.ConflictData;
 import ru.practicum.shareit.exeption.NotFoundData;
@@ -21,23 +22,15 @@ import java.util.Optional;
 @Slf4j
 @RestController
 @RequestMapping("/items")
+@AllArgsConstructor
+@PropertySource("classpath:application.properties")
 public class ItemController {
 
-
     private final ItemService itemService;
-    private final ItemMapper itemMapper;
     private final UserServiceImpl userService;
 
-    @Autowired
-    public ItemController(ItemService itemService, ItemMapper itemMapper, UserServiceImpl userService) {
-        this.itemService = itemService;
-        this.itemMapper = itemMapper;
-        this.userService = userService;
-    }
-
-
     @PostMapping
-    public ItemDto create(@RequestBody @Valid ItemDto itemDto, @RequestHeader(value = "X-Sharer-User-Id", required = true) Long userId) {
+    public ItemDto create(@RequestBody @Valid ItemDto itemDto, @RequestHeader(value = "${headers.userId}", required = true) Long userId) {
 
         log.info("Получен POST запрос к эндпоинту: /items, Строка параметров запроса: '{}'",
                 itemDto);
@@ -46,14 +39,14 @@ public class ItemController {
             throw new NotFoundData("Not found user");
         }
         if (itemService.find(itemDto.getId()).isEmpty()) {
-            return itemService.save(itemMapper.toEntity(itemDto)).get();
+            return itemService.save(ItemMapper.toEntity(itemDto)).get();
         } else {
             throw new ConflictData("Conflict data");
         }
     }
 
     @PatchMapping("/{itemId}")
-    public ItemDto update(@RequestBody ItemDto updateData, @PathVariable int itemId, @RequestHeader(value = "X-Sharer-User-Id", required = true) Long userId) {
+    public ItemDto update(@RequestBody ItemDto updateData, @PathVariable int itemId, @RequestHeader(value = "${headers.userId}", required = true) Long userId) {
         log.info("Получен PATCH запрос к эндпоинту: /items, Строка параметров запроса: '{}'",
                 itemId);
         //присвоили userId сущности, из которой будем брать данные для обновления
@@ -70,8 +63,8 @@ public class ItemController {
         if (itemFindId.get().getOwner() != null && !Objects.equals(itemFindId.get().getOwner(), userId)) {
             throw new NotFoundData("Not found item with userId=" + userId);
         }
-        Item itemToEntity = itemMapper.toEntity(itemFindId.get());
-        Item itemNewDataToEntity = itemMapper.toEntity(updateData);
+        Item itemToEntity = ItemMapper.toEntity(itemFindId.get());
+        Item itemNewDataToEntity = ItemMapper.toEntity(updateData);
         return itemService.update(itemToEntity, itemNewDataToEntity).get();
     }
 
@@ -87,13 +80,13 @@ public class ItemController {
     }
 
     @GetMapping
-    public Collection<ItemDto> findAll(@RequestHeader(value = "X-Sharer-User-Id", required = true) Long userId) {
+    public Collection<ItemDto> findAll(@RequestHeader(value = "${headers.userId}", required = true) Long userId) {
         log.debug("Получен GET запрос к эндпоинту: /items");
         return itemService.findAll(userId);
     }
 
     @GetMapping("/search")
-    public Collection<ItemDto> find(@RequestHeader(value = "X-Sharer-User-Id", required = true) Long userId,
+    public Collection<ItemDto> find(@RequestHeader(value = "${headers.userId}", required = true) Long userId,
                                     @RequestParam(required = false) String text) {
         log.debug("Получен GET запрос к эндпоинту: /items, Строка параметров запроса: '{}', " +
                 "параметр запроса: '{}'.", userId, text);

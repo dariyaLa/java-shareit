@@ -1,7 +1,7 @@
 package ru.practicum.shareit.user;
 
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.exeption.ConflictData;
 import ru.practicum.shareit.exeption.NotFoundData;
@@ -16,16 +16,10 @@ import java.util.Optional;
 @Slf4j
 @RestController
 @RequestMapping(path = "/users")
+@AllArgsConstructor
 public class UserController {
 
     private final UserServiceImpl userService;
-    private final UserMapper userMapper;
-
-    @Autowired
-    public UserController(UserServiceImpl userService, UserMapper userMapper) {
-        this.userService = userService;
-        this.userMapper = userMapper;
-    }
 
     @PostMapping
     public UserDto create(@RequestBody @Valid UserDto userDto) {
@@ -33,7 +27,7 @@ public class UserController {
         log.info("Получен POST запрос к эндпоинту: /users, Строка параметров запроса: '{}'",
                 userDto);
         if (userService.find(userDto.getEmail()).isEmpty()) {
-            return userService.save(userMapper.toEntity(userDto)).get();
+            return userService.save(UserMapper.toEntity(userDto)).get();
         } else {
             throw new ConflictData("Conflict data");
         }
@@ -55,11 +49,8 @@ public class UserController {
                 throw new ConflictData("Conflict data");
             }
         }
-        /*Optional<UserDto> user = userService.update(userMapper.toEntity(userService.find(id).get()),
-                userMapper.toEntity(updateData));
-        return user.get();*/
-        User userToEntity = userMapper.toEntity(userFindId.get());
-        User userNewDataToEntity = userMapper.toEntity(updateData);
+        User userToEntity = UserMapper.toEntity(userFindId.get());
+        User userNewDataToEntity = UserMapper.toEntity(updateData);
         return userService.update(userToEntity, userNewDataToEntity).get();
     }
 
