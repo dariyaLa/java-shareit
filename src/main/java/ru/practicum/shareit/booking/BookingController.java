@@ -53,6 +53,11 @@ public class BookingController {
     public Collection<BookingDtoOut> findAll(@RequestHeader(value = "${headers.userId}", required = true) Long userId,
                                              @RequestParam(required = false, defaultValue = "ALL") String state) {
         log.debug("Получен GET запрос к эндпоинту: /bookings, Строка параметров запроса: userId='{}'", userId);
+        try {
+            State.valueOf(state);
+        } catch (IllegalArgumentException е) {
+            State.exeptionState();
+        }
         return bookingService.findAll(userId, State.valueOf(state));
     }
 
@@ -60,6 +65,11 @@ public class BookingController {
     public Collection<BookingDtoOut> findAllOwner(@RequestHeader(value = "${headers.userId}", required = true) Long userId,
                                                   @RequestParam(required = false, defaultValue = "ALL") String state) {
         log.debug("Получен GET запрос к эндпоинту: /bookings, Строка параметров запроса: userId='{}'", userId);
+        try {
+            State.valueOf(state);
+        } catch (IllegalArgumentException е) {
+            State.exeptionState();
+        }
         return bookingService.findAllOwner(userId, State.valueOf(state));
     }
 
