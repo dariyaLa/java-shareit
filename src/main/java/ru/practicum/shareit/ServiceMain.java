@@ -7,11 +7,11 @@ public interface ServiceMain<T, K> {
 
     Optional<T> save(K entity);
 
-    Optional<T> update(K entity, K newEntity);
+    Optional<T> update(K entity);
 
     Optional<T> find(long id);
 
-    Optional<T> find(String str);
+    Optional<K> find(String str);
 
     Collection<T> findAll();
 

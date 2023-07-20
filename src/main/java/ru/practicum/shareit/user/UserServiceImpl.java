@@ -1,18 +1,22 @@
 package ru.practicum.shareit.user;
 
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Example;
+import org.springframework.data.domain.ExampleMatcher;
+import org.springframework.data.repository.query.FluentQuery;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.ServiceMain;
+import ru.practicum.shareit.exeption.NotFoundData;
 
 import java.util.Collection;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class UserServiceImpl implements ServiceMain<UserDto, User> {
 
-    UserRepositoryImpl userRepository;
+    private final UserRepository userRepository;
 
     @Override
     public Optional<UserDto> save(User user) {
@@ -21,16 +25,25 @@ public class UserServiceImpl implements ServiceMain<UserDto, User> {
 
     @Override
     public Optional<UserDto> find(long id) {
-        return UserMapper.toDto(userRepository.findId(id));
+        Optional<User> user = userRepository.findById(id);
+        if (user.isEmpty()) {
+            throw new NotFoundData("Not found user");
+        } else {
+            return UserMapper.toDto(userRepository.findById(id).get());
+        }
     }
 
     @Override
-    public Optional<UserDto> find(String str) {
-        Optional<User> user = userRepository.find(str);
-        if (user.isEmpty()) {
-            return Optional.empty();
-        }
-        return UserMapper.toDto(user.get());
+    public Optional<User> find(String str) {
+        User user = new User();
+        user.setEmail(str);
+        ExampleMatcher matcher = ExampleMatcher.matching()
+                .withIgnorePaths("Id")
+                .withIgnorePaths("name");
+        Example<User> example = Example.of(user, matcher);
+        Optional<User> match = userRepository.findBy(example, FluentQuery.FetchableFluentQuery::first);
+
+        return match;
     }
 
     @Override
@@ -42,11 +55,12 @@ public class UserServiceImpl implements ServiceMain<UserDto, User> {
 
     @Override
     public void delete(long id) {
-        userRepository.delete(id);
+        userRepository.deleteById(id);
     }
 
     @Override
-    public Optional<UserDto> update(User user, User userNewData) {
-        return UserMapper.toDto(userRepository.update(user, userNewData));
+    public Optional<UserDto> update(User user) {
+        return UserMapper.toDto(userRepository.save(user));
     }
+
 }

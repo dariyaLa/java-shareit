@@ -4,21 +4,20 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.web.bind.annotation.*;
-import ru.practicum.shareit.exeption.ConflictData;
 import ru.practicum.shareit.exeption.NotFoundData;
+import ru.practicum.shareit.item.dto.CommentsDto;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.dto.ItemMapper;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.UserServiceImpl;
 
 import javax.validation.Valid;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Objects;
 import java.util.Optional;
 
-/**
- * TODO Sprint add-controllers.
- */
 @Slf4j
 @RestController
 @RequestMapping("/items")
@@ -38,11 +37,7 @@ public class ItemController {
         if (userId != null && userService.find(userId).isEmpty()) {
             throw new NotFoundData("Not found user");
         }
-        if (itemService.find(itemDto.getId()).isEmpty()) {
-            return itemService.save(ItemMapper.toEntity(itemDto)).get();
-        } else {
-            throw new ConflictData("Conflict data");
-        }
+        return itemService.save(ItemMapper.toEntity(itemDto)).get();
     }
 
     @PatchMapping("/{itemId}")
@@ -51,28 +46,35 @@ public class ItemController {
                 itemId);
         //присвоили userId сущности, из которой будем брать данные для обновления
         updateData.setOwner(userId);
-        if (userId != null && userService.find(userId).isEmpty()) {
-            throw new NotFoundData("Not found user");
-        }
         Optional<ItemDto> itemFindId = itemService.find(itemId);
         //ищем, есть ли user для обновления
         if (itemFindId.isEmpty()) {
-            throw new NotFoundData("Not found data");
+            throw new NotFoundData("Not found user");
         }
         //проверка, что user совпадают
         if (itemFindId.get().getOwner() != null && !Objects.equals(itemFindId.get().getOwner(), userId)) {
             throw new NotFoundData("Not found item with userId=" + userId);
         }
-        Item itemToEntity = ItemMapper.toEntity(itemFindId.get());
-        Item itemNewDataToEntity = ItemMapper.toEntity(updateData);
-        return itemService.update(itemToEntity, itemNewDataToEntity).get();
+        //собираем данные для обновления
+        if (updateData.getName() != null) {
+            itemFindId.get().setName(updateData.getName());
+        }
+        if (updateData.getDescription() != null) {
+            itemFindId.get().setDescription(updateData.getDescription());
+        }
+        if (updateData.getAvailable() != null) {
+            itemFindId.get().setAvailable(updateData.getAvailable());
+        }
+        Item itemNewDataToEntity = ItemMapper.toEntity(itemFindId.get());
+        return itemService.save(itemNewDataToEntity).get();
     }
 
     @GetMapping("/{id}")
-    public ItemDto find(@PathVariable int id) {
-        log.debug("Получен GET запрос к эндпоинту: /items, Строка параметров запроса: '{}'",
-                id);
-        Optional<ItemDto> itemFindId = itemService.find(id);
+    public ItemDto find(@PathVariable int id, @RequestHeader(value = "${headers.userId}", required = false) Long userId) {
+        log.debug("Получен GET запрос к эндпоинту: /items, Строка параметров запроса: '{}'", id);
+        LocalDateTime checkTime = LocalDateTime.now();
+        Optional<ItemDto> itemFindId = itemService.findWihtUserId(id, userId, checkTime);
+
         if (itemFindId.isEmpty()) {
             throw new NotFoundData("Not found data");
         }
@@ -82,15 +84,26 @@ public class ItemController {
     @GetMapping
     public Collection<ItemDto> findAll(@RequestHeader(value = "${headers.userId}", required = true) Long userId) {
         log.debug("Получен GET запрос к эндпоинту: /items");
-        return itemService.findAll(userId);
+        return itemService.findAllWithUser(userId);
     }
 
     @GetMapping("/search")
     public Collection<ItemDto> find(@RequestHeader(value = "${headers.userId}", required = true) Long userId,
                                     @RequestParam(required = false) String text) {
-        log.debug("Получен GET запрос к эндпоинту: /items, Строка параметров запроса: '{}', " +
+        log.info("Получен GET запрос к эндпоинту: /items, Строка параметров запроса: '{}', " +
                 "параметр запроса: '{}'.", userId, text);
-        return itemService.findAll(userId, text);
+        if (text.isBlank()) {
+            return new ArrayList<>();
+        }
+        return itemService.findAll(text);
+    }
+
+    @PostMapping("/{itemId}/comment")
+    public CommentsDto createComment(@RequestBody @Valid CommentsDto commentsDto, @RequestHeader(value = "${headers.userId}", required = true) Long userId,
+                                     @PathVariable int itemId) {
+
+        log.info("Получен POST запрос к эндпоинту: /comment, Строка параметров запроса: userId = '{}' , itemId = '{}'", userId, itemId);
+        return itemService.saveComment(ItemMapper.toEntity(commentsDto, itemId, userId));
     }
 
 }
