@@ -55,7 +55,7 @@ public class BookingController {
         log.debug("Получен GET запрос к эндпоинту: /bookings, Строка параметров запроса: userId='{}'", userId);
         try {
             State.valueOf(state);
-        } catch (IllegalArgumentException е) {
+        } catch (IllegalArgumentException exception) {
             State.exeptionState();
         }
         return bookingService.findAll(userId, State.valueOf(state));
@@ -67,7 +67,7 @@ public class BookingController {
         log.debug("Получен GET запрос к эндпоинту: /bookings, Строка параметров запроса: userId='{}'", userId);
         try {
             State.valueOf(state);
-        } catch (IllegalArgumentException е) {
+        } catch (IllegalArgumentException exception) {
             State.exeptionState();
         }
         return bookingService.findAllOwner(userId, State.valueOf(state));
