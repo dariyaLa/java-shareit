@@ -23,9 +23,9 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 public class BookingService {
 
-    BookingRepository bookingRepository;
-    ItemService itemService;
-    UserServiceImpl userService;
+    private final BookingRepository bookingRepository;
+    private final ItemService itemService;
+    private final UserServiceImpl userService;
 
     public BookingDtoOut save(Booking booking) {
         UserDto user = userService.find(booking.getUserId()).get();
@@ -133,8 +133,6 @@ public class BookingService {
                             return BookingMapper.toDto(i, itemDto, userDto);
                         }).sorted(Comparator.comparing(BookingDtoOut::getStart).reversed())
                         .collect(Collectors.toList());
-
-
             default:
                 State.exeptionState();
         }
@@ -148,7 +146,6 @@ public class BookingService {
                 return findAll(userId);
             case FUTURE:
                 return bookingRepository.findAllByUserFutureBooking(userId, LocalDateTime.now()).stream()
-                        //.filter(i -> i.getStart().isAfter(pointDate))
                         .map(i -> {
                             ItemDto itemDto = itemService.find(i.getItemId()).get();
                             return BookingMapper.toDto(i, itemDto, user);
@@ -156,8 +153,7 @@ public class BookingService {
                         .sorted(Comparator.comparing(BookingDtoOut::getStart).reversed())
                         .collect(Collectors.toList());
             case WAITING:
-                return bookingRepository.findAllByUserIdAndState(userId, State.WAITING.name()).stream()
-                        //.filter(i -> i.getStart().isAfter(pointDate))
+                return bookingRepository.findByUserIdAndState(userId, State.WAITING).stream()
                         .map(i -> {
                             ItemDto itemDto = itemService.find(i.getItemId()).get();
                             return BookingMapper.toDto(i, itemDto, user);
@@ -165,8 +161,7 @@ public class BookingService {
                         .sorted(Comparator.comparing(BookingDtoOut::getStart).reversed())
                         .collect(Collectors.toList());
             case REJECTED:
-                return bookingRepository.findAllByUserIdAndState(userId, State.REJECTED.name()).stream()
-                        //.filter(i -> i.getStart().isAfter(pointDate))
+                return bookingRepository.findByUserIdAndState(userId, State.REJECTED).stream()
                         .map(i -> {
                             ItemDto itemDto = itemService.find(i.getItemId()).get();
                             return BookingMapper.toDto(i, itemDto, user);
@@ -175,7 +170,6 @@ public class BookingService {
                         .collect(Collectors.toList());
             case PAST:
                 return bookingRepository.findAllByUserPastBooking(userId, LocalDateTime.now()).stream()
-                        //.filter(i -> i.getStart().isAfter(pointDate))
                         .map(i -> {
                             ItemDto itemDto = itemService.find(i.getItemId()).get();
                             return BookingMapper.toDto(i, itemDto, user);
@@ -184,14 +178,12 @@ public class BookingService {
                         .collect(Collectors.toList());
             case CURRENT:
                 return bookingRepository.findAllByUserCurrentBooking(userId, LocalDateTime.now()).stream()
-                        //.filter(i -> i.getStart().isAfter(pointDate))
                         .map(i -> {
                             ItemDto itemDto = itemService.find(i.getItemId()).get();
                             return BookingMapper.toDto(i, itemDto, user);
                         })
                         .sorted(Comparator.comparing(BookingDtoOut::getStart).reversed())
                         .collect(Collectors.toList());
-
             default:
                 State.exeptionState();
         }

@@ -13,9 +13,6 @@ import java.time.LocalDateTime;
 @Data
 @Entity
 @Table(name = "booking")
-@Getter
-@Setter
-@ToString
 public class Booking {
 
     @Id

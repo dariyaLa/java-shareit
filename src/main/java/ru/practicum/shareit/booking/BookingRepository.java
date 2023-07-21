@@ -36,10 +36,7 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
 
     Booking findByIdAndUserId(long id, long userId);
 
-    List<Booking> findByItemIdAndUserId(long id, long userId);
-
-    @Query(value = "select * from booking where user_id = ?1 and state = ?2", nativeQuery = true)
-    List<Booking> findAllByUserIdAndState(long userId, String state);
+    List<Booking> findByUserIdAndState(long userId, State state);
 
     List<Booking> findAllByUserIdAndItemId(long userId, long itemId); //выводим все брони для user для одного item
 

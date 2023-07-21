@@ -6,8 +6,6 @@ import org.springframework.context.annotation.PropertySource;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.dto.BookingDtoOut;
-import ru.practicum.shareit.item.ItemService;
-import ru.practicum.shareit.user.UserServiceImpl;
 
 import javax.validation.Valid;
 import java.util.Collection;
@@ -19,9 +17,7 @@ import java.util.Collection;
 @AllArgsConstructor
 public class BookingController {
 
-    ItemService itemService;
-    BookingService bookingService;
-    UserServiceImpl userService;
+    private final BookingService bookingService;
 
     @PostMapping
     public BookingDtoOut create(@Valid @RequestBody BookingDto bookingDto, @RequestHeader(value = "${headers.userId}", required = true) Long userId) {
