@@ -11,6 +11,9 @@ import java.util.Optional;
 
 public final class ItemMapper {
 
+    private ItemMapper() {
+    }
+
     public static Optional<ItemDto> toDto(Item item) {
         if (item == null) {
             return Optional.empty();

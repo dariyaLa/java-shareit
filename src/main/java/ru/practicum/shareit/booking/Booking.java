@@ -2,6 +2,7 @@ package ru.practicum.shareit.booking;
 
 import lombok.*;
 import org.springframework.format.annotation.DateTimeFormat;
+import ru.practicum.shareit.user.User;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -13,9 +14,6 @@ import java.time.LocalDateTime;
 @Data
 @Entity
 @Table(name = "booking")
-@Getter
-@Setter
-@ToString
 public class Booking {
 
     @Id

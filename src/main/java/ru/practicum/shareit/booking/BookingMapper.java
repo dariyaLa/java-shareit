@@ -7,7 +7,9 @@ import ru.practicum.shareit.user.UserDto;
 
 import java.util.Optional;
 
-public class BookingMapper {
+public final class BookingMapper {
+
+    private BookingMapper() {}
 
     public static Optional<BookingDto> toDto(Booking booking) {
         if (booking == null) {
@@ -18,7 +20,6 @@ public class BookingMapper {
                 .start(booking.getStart())
                 .end(booking.getEnd())
                 .itemId(booking.getItemId())
-                //.userId(booking.getUserId())
                 .bookerId(booking.getUserId())
                 .state(booking.getState())
                 .build());
@@ -30,7 +31,6 @@ public class BookingMapper {
                 .start(dto.getStart())
                 .end(dto.getEnd())
                 .itemId(dto.getItemId())
-                //.userId(dto.getUserId())
                 .userId(dto.getBookerId())
                 .state(dto.getState())
                 .build();
@@ -47,13 +47,4 @@ public class BookingMapper {
                 .build();
     }
 
-    public static BookingDtoOut toDto(Booking booking, UserDto user) {
-        return BookingDtoOut.builder()
-                .id(booking.getId())
-                .start(booking.getStart())
-                .end(booking.getEnd())
-                .booker(UserDto.builder().id(user.getId()).build())
-                .status(booking.getState())
-                .build();
-    }
 }
