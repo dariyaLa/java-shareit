@@ -7,7 +7,7 @@ public interface RepositoryMain<T> {
 
     T save(T entity);
 
-    T update(T entity, T updateData);
+    T update(T entity);
 
     T findId(long id);
 
