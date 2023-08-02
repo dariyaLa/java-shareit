@@ -60,7 +60,7 @@ public class BookingController {
         } catch (IllegalArgumentException exception) {
             State.exeptionState();
         }
-        Pageable pageable = (Pageable) PageRequest.of(from / size, size, Sort.by("id").descending());
+        Pageable pageable = (Pageable) PageRequest.of(from / size, size, Sort.by("id").ascending());
         return bookingService.findAll(userId, State.valueOf(state), pageable);
     }
 
