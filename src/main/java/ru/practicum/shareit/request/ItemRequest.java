@@ -1,19 +1,20 @@
 package ru.practicum.shareit.request;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
-
-/**
- * TODO Sprint add-item-requests.
- */
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "requests")
 @Data
+@Builder
 @AllArgsConstructor
+@NoArgsConstructor
 public class ItemRequest {
 
     @Id
@@ -23,6 +24,8 @@ public class ItemRequest {
     @Column(name = "description")
     private String description;
     @NotNull
-    @Column(name = "user_id")
-    private Long owner;
+    @Column(name = "requestor")
+    private long requestor;
+    @Column(name = "created")
+    private LocalDateTime created;
 }

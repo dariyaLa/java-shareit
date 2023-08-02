@@ -3,11 +3,16 @@ package ru.practicum.shareit.booking;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.PropertySource;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.dto.BookingDtoOut;
 
 import javax.validation.Valid;
+import javax.validation.constraints.Min;
 import java.util.Collection;
 
 @Slf4j
@@ -15,6 +20,7 @@ import java.util.Collection;
 @RequestMapping(path = "/bookings")
 @PropertySource("classpath:application.properties")
 @AllArgsConstructor
+@Validated
 public class BookingController {
 
     private final BookingService bookingService;
@@ -47,26 +53,32 @@ public class BookingController {
 
     @GetMapping
     public Collection<BookingDtoOut> findAll(@RequestHeader(value = "${headers.userId}", required = true) Long userId,
-                                             @RequestParam(required = false, defaultValue = "ALL") String state) {
+                                             @RequestParam(required = false, defaultValue = "ALL") String state,
+                                             @Min(0) @RequestParam(required = false, defaultValue = "0") int from,
+                                             @Min(1) @RequestParam(required = false, defaultValue = "1000") int size) {
         log.debug("Получен GET запрос к эндпоинту: /bookings, Строка параметров запроса: userId='{}'", userId);
         try {
             State.valueOf(state);
         } catch (IllegalArgumentException exception) {
             State.exeptionState();
         }
-        return bookingService.findAll(userId, State.valueOf(state));
+        Pageable pageable = (Pageable) PageRequest.of(from / size, size, Sort.by("id").descending());
+        return bookingService.findAll(userId, State.valueOf(state), pageable);
     }
 
     @GetMapping("/owner")
     public Collection<BookingDtoOut> findAllOwner(@RequestHeader(value = "${headers.userId}", required = true) Long userId,
-                                                  @RequestParam(required = false, defaultValue = "ALL") String state) {
+                                                  @RequestParam(required = false, defaultValue = "ALL") String state,
+                                                  @Min(0) @RequestParam(required = false, defaultValue = "0") int from,
+                                                  @Min(1) @RequestParam(required = false, defaultValue = "1000") int size) {
         log.debug("Получен GET запрос к эндпоинту: /bookings, Строка параметров запроса: userId='{}'", userId);
         try {
             State.valueOf(state);
         } catch (IllegalArgumentException exception) {
             State.exeptionState();
         }
-        return bookingService.findAllOwner(userId, State.valueOf(state));
+        Pageable pageable = (Pageable) PageRequest.of(from / size, size, Sort.by("id").descending());
+        return bookingService.findAllOwner(userId, State.valueOf(state), pageable);
     }
 
 }

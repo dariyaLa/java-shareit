@@ -27,7 +27,6 @@ public class ItemDto {
     private Boolean available;
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private Long owner;
-    @JsonInclude(JsonInclude.Include.NON_NULL)
     private Long requestId;
     private BookingDto lastBooking;
     private BookingDto nextBooking;

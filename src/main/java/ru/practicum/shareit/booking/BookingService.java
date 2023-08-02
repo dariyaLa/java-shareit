@@ -2,6 +2,7 @@ package ru.practicum.shareit.booking;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.booking.dto.BookingDtoOut;
 import ru.practicum.shareit.exeption.ConflictDataBooking;
@@ -69,9 +70,9 @@ public class BookingService {
         }
     }
 
-    public Collection<BookingDtoOut> findAll(long userId) {
+    public Collection<BookingDtoOut> findAll(long userId, Pageable pageable) {
         UserDto user = userService.find(userId).get();
-        return bookingRepository.findAllByUserId(userId).stream()
+        return bookingRepository.findAllByUserId(userId, pageable).stream()
                 .map(i -> {
                     ItemDto itemDto = itemService.find(i.getItemId()).get();
                     return BookingMapper.toDto(i, itemDto, user);
@@ -80,11 +81,11 @@ public class BookingService {
                 .collect(Collectors.toList());
     }
 
-    public Collection<BookingDtoOut> findAllOwner(long userId, State state) {
+    public Collection<BookingDtoOut> findAllOwner(long userId, State state, Pageable pageable) {
         UserDto user = userService.find(userId).get(); // здесь выкинется исключение, что пользователя с таким id нет
         switch (state) {
             case ALL:
-                return bookingRepository.findAllOwnerUserId(userId).stream()
+                return bookingRepository.findAllOwnerUserId(userId, pageable).stream()
                         .map(i -> {
                             ItemDto itemDto = itemService.find(i.getItemId()).get();
                             UserDto userDto = userService.find(i.getUserId()).get();
@@ -92,7 +93,7 @@ public class BookingService {
                         }).sorted(Comparator.comparing(BookingDtoOut::getStart).reversed())
                         .collect(Collectors.toList());
             case FUTURE:
-                return bookingRepository.findAllOwnerUserIdInFuture(userId).stream()
+                return bookingRepository.findAllOwnerUserIdInFuture(userId, pageable).stream()
                         .map(i -> {
                             ItemDto itemDto = itemService.find(i.getItemId()).get();
                             UserDto userDto = userService.find(i.getUserId()).get();
@@ -100,7 +101,7 @@ public class BookingService {
                         }).sorted(Comparator.comparing(BookingDtoOut::getStart).reversed())
                         .collect(Collectors.toList());
             case WAITING:
-                return bookingRepository.findAllOwnerUserIdAndState(userId, State.WAITING.name()).stream()
+                return bookingRepository.findAllOwnerUserIdAndState(userId, State.WAITING.name(), pageable).stream()
                         .map(i -> {
                             ItemDto itemDto = itemService.find(i.getItemId()).get();
                             UserDto userDto = userService.find(i.getUserId()).get();
@@ -109,7 +110,7 @@ public class BookingService {
                         .sorted(Comparator.comparing(BookingDtoOut::getStart).reversed())
                         .collect(Collectors.toList());
             case REJECTED:
-                return bookingRepository.findAllOwnerUserIdAndState(userId, State.REJECTED.name()).stream()
+                return bookingRepository.findAllOwnerUserIdAndState(userId, State.REJECTED.name(), pageable).stream()
                         .map(i -> {
                             ItemDto itemDto = itemService.find(i.getItemId()).get();
                             UserDto userDto = userService.find(i.getUserId()).get();
@@ -118,7 +119,7 @@ public class BookingService {
                         .sorted(Comparator.comparing(BookingDtoOut::getStart).reversed())
                         .collect(Collectors.toList());
             case PAST:
-                return bookingRepository.findAllOwnerUserIdInPast(userId).stream()
+                return bookingRepository.findAllOwnerUserIdInPast(userId, pageable).stream()
                         .map(i -> {
                             ItemDto itemDto = itemService.find(i.getItemId()).get();
                             UserDto userDto = userService.find(i.getUserId()).get();
@@ -139,13 +140,13 @@ public class BookingService {
         return null;
     }
 
-    public Collection<BookingDtoOut> findAll(long userId, State state) {
+    public Collection<BookingDtoOut> findAll(long userId, State state, Pageable pageable) {
         UserDto user = userService.find(userId).get();
         switch (state) {
             case ALL:
-                return findAll(userId);
+                return findAll(userId, pageable);
             case FUTURE:
-                return bookingRepository.findAllByUserFutureBooking(userId, LocalDateTime.now()).stream()
+                return bookingRepository.findAllByUserFutureBooking(userId, LocalDateTime.now(), pageable).stream()
                         .map(i -> {
                             ItemDto itemDto = itemService.find(i.getItemId()).get();
                             return BookingMapper.toDto(i, itemDto, user);
@@ -153,7 +154,7 @@ public class BookingService {
                         .sorted(Comparator.comparing(BookingDtoOut::getStart).reversed())
                         .collect(Collectors.toList());
             case WAITING:
-                return bookingRepository.findByUserIdAndState(userId, State.WAITING).stream()
+                return bookingRepository.findByUserIdAndState(userId, State.WAITING, pageable).stream()
                         .map(i -> {
                             ItemDto itemDto = itemService.find(i.getItemId()).get();
                             return BookingMapper.toDto(i, itemDto, user);
@@ -161,7 +162,7 @@ public class BookingService {
                         .sorted(Comparator.comparing(BookingDtoOut::getStart).reversed())
                         .collect(Collectors.toList());
             case REJECTED:
-                return bookingRepository.findByUserIdAndState(userId, State.REJECTED).stream()
+                return bookingRepository.findByUserIdAndState(userId, State.REJECTED, pageable).stream()
                         .map(i -> {
                             ItemDto itemDto = itemService.find(i.getItemId()).get();
                             return BookingMapper.toDto(i, itemDto, user);
@@ -169,7 +170,7 @@ public class BookingService {
                         .sorted(Comparator.comparing(BookingDtoOut::getStart).reversed())
                         .collect(Collectors.toList());
             case PAST:
-                return bookingRepository.findAllByUserPastBooking(userId, LocalDateTime.now()).stream()
+                return bookingRepository.findAllByUserPastBooking(userId, LocalDateTime.now(), pageable).stream()
                         .map(i -> {
                             ItemDto itemDto = itemService.find(i.getItemId()).get();
                             return BookingMapper.toDto(i, itemDto, user);
@@ -177,7 +178,7 @@ public class BookingService {
                         .sorted(Comparator.comparing(BookingDtoOut::getStart).reversed())
                         .collect(Collectors.toList());
             case CURRENT:
-                return bookingRepository.findAllByUserCurrentBooking(userId, LocalDateTime.now()).stream()
+                return bookingRepository.findAllByUserCurrentBooking(userId, LocalDateTime.now(), pageable).stream()
                         .map(i -> {
                             ItemDto itemDto = itemService.find(i.getItemId()).get();
                             return BookingMapper.toDto(i, itemDto, user);

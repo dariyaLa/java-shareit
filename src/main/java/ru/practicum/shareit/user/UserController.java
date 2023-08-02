@@ -13,6 +13,7 @@ import java.util.Optional;
 @RestController
 @RequestMapping(path = "/users")
 @RequiredArgsConstructor
+//@Validated
 public class UserController {
 
     private final UserServiceImpl userService;
