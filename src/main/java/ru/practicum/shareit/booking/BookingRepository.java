@@ -22,7 +22,7 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
             "(select id from items where user_id = ?1)", nativeQuery = true)
     Page<Booking> findAllOwnerUserIdInPast(long userId, Pageable pageable);
 
-    @Query(value = "select * from booking where end_date > now() and date_trunc('day', start_date) = date_trunc('day', now()) and item_id in " + //выводим все текущие брони items, владельцем которых являемся
+    @Query(value = "select * from booking where end_date > now() and date_trunc('day', start_date) <= date_trunc('day', now()) and item_id in " + //выводим все текущие брони items, владельцем которых являемся
             "(select id from items where user_id = ?1) ORDER BY start_date ASC limit 1", nativeQuery = true)
     List<Booking> findAllOwnerUserIdCurrent(long userId);
 
@@ -55,7 +55,7 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
     Page<Booking> findAllByUserPastBooking(long userId, LocalDateTime dateTime, Pageable pageable);
 
     @Query(value = "select * from booking where user_id = ?1 and end_date > now() " +
-            "and date_trunc('day', start_date) = date_trunc('day', now()) ORDER BY start_date ASC", nativeQuery = true)
+            "and date_trunc('day', start_date) <= date_trunc('day', now()) ORDER BY start_date ASC", nativeQuery = true)
     Page<Booking> findAllByUserCurrentBooking(long userId, LocalDateTime dateTime, Pageable pageable);
 
     @Query(value = "select * from booking where item_id = ?1 AND state ='APPROVED' " +
