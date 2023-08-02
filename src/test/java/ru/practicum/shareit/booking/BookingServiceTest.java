@@ -48,7 +48,7 @@ public class BookingServiceTest {
 
     private User userOwner;
 
-    private Booking booking = new Booking(3, LocalDateTime.now().plusMinutes(1), LocalDateTime.now().plusMinutes(2),
+    private Booking booking = new Booking(3, LocalDateTime.now().minusMinutes(1), LocalDateTime.now().plusMinutes(2),
             4, 4, State.WAITING);
 
     @Test
@@ -216,7 +216,7 @@ public class BookingServiceTest {
     }
 
     @Test
-    void expStartdDteTest() {
+    void expStartDateTest() {
         Throwable thrown = assertThrows(ValidationError.class,
                 () -> {
                     booking.setStart(LocalDateTime.now().minusDays(1));
@@ -227,7 +227,7 @@ public class BookingServiceTest {
     }
 
     @Test
-    void expEndDateErlyStartDateTest() {
+    void expEndDateEarlyStartDateTest() {
         Throwable thrown = assertThrows(ValidationError.class,
                 () -> {
                     booking.setStart(LocalDateTime.now().plusMinutes(3));
@@ -239,7 +239,7 @@ public class BookingServiceTest {
     }
 
     @Test
-    void expEndDateEйгфдыStartDateTest() {
+    void expEndDateEqualsStartDateTest() {
         Throwable thrown = assertThrows(ValidationError.class,
                 () -> {
                     booking.setStart(LocalDateTime.now().plusMinutes(1));
