@@ -2,7 +2,9 @@ package ru.practicum.shareit.booking;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.booking.dto.BookingDtoOut;
 import ru.practicum.shareit.exeption.ConflictDataBooking;
@@ -71,8 +73,9 @@ public class BookingService {
     }
 
     public Collection<BookingDtoOut> findAll(long userId, Pageable pageable) {
+        Pageable pageableF = (Pageable) PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), Sort.by("id").descending());
         UserDto user = userService.find(userId).get();
-        return bookingRepository.findAllByUserId(userId, pageable).stream()
+        return bookingRepository.findAllByUserId(userId, pageableF).stream()
                 .map(i -> {
                     ItemDto itemDto = itemService.find(i.getItemId()).get();
                     return BookingMapper.toDto(i, itemDto, user);
