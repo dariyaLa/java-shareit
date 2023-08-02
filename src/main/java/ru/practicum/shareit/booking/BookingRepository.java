@@ -54,8 +54,8 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
             "where bo.user_id = ?1 and bo.end_date <= now()", nativeQuery = true)
     Page<Booking> findAllByUserPastBooking(long userId, LocalDateTime dateTime, Pageable pageable);
 
-    @Query(value = "select * from booking where user_id = ?1 and end_date > now() " +
-            "and date_trunc('day', start_date) <= date_trunc('day', now()) ORDER BY start_date ASC", nativeQuery = true)
+    @Query(value = "select * from booking where user_id = ?1 and end_date > LOCALTIMESTAMP " +
+            "and start_date <= LOCALTIMESTAMP", nativeQuery = true)
     Page<Booking> findAllByUserCurrentBooking(long userId, LocalDateTime dateTime, Pageable pageable);
 
     @Query(value = "select * from booking where item_id = ?1 AND state ='APPROVED' " +
