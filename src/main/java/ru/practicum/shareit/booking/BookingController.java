@@ -28,7 +28,7 @@ public class BookingController {
     @PostMapping
     public BookingDtoOut create(@Valid @RequestBody BookingDto bookingDto, @RequestHeader(value = "${headers.userId}", required = true) Long userId) {
 
-        log.info("Получен POST запрос к эндпоинту: /bookings, Строка параметров запроса: '{}', iserId='{}'",
+        log.debug("Получен POST запрос к эндпоинту: /bookings, Строка параметров запроса: '{}', iserId='{}'",
                 bookingDto, userId);
         bookingDto.setBookerId(userId);
         bookingDto.setState(State.WAITING);
@@ -39,7 +39,7 @@ public class BookingController {
     public BookingDtoOut update(@RequestHeader(value = "${headers.userId}", required = true) Long userId,
                                 @RequestParam(required = true) Boolean approved,
                                 @PathVariable Long bookingId) {
-        log.info("Получен PATCH запрос к эндпоинту: /bookings, параметры запроса: userId='{}', " +
+        log.debug("Получен PATCH запрос к эндпоинту: /bookings, параметры запроса: userId='{}', " +
                 "approved= '{}', bookingId= {} .", userId, approved, bookingId);
         return bookingService.update(bookingId, approved, userId);
     }
@@ -47,7 +47,6 @@ public class BookingController {
     @GetMapping("/{bookingId}")
     public BookingDtoOut find(@RequestHeader(value = "${headers.userId}", required = true) Long userId,
                               @PathVariable Long bookingId) {
-        log.debug("Получен GET запрос к эндпоинту: /bookings, Строка параметров запроса: '{}'", bookingId);
         return bookingService.find(userId, bookingId);
     }
 
@@ -56,7 +55,6 @@ public class BookingController {
                                              @RequestParam(required = false, defaultValue = "ALL") String state,
                                              @Min(0) @RequestParam(required = false, defaultValue = "0") int from,
                                              @Min(1) @RequestParam(required = false, defaultValue = "1000") int size) {
-        log.debug("Получен GET запрос к эндпоинту: /bookings, Строка параметров запроса: userId='{}'", userId);
         try {
             State.valueOf(state);
         } catch (IllegalArgumentException exception) {
@@ -71,7 +69,6 @@ public class BookingController {
                                                   @RequestParam(required = false, defaultValue = "ALL") String state,
                                                   @Min(0) @RequestParam(required = false, defaultValue = "0") int from,
                                                   @Min(1) @RequestParam(required = false, defaultValue = "1000") int size) {
-        log.debug("Получен GET запрос к эндпоинту: /bookings, Строка параметров запроса: userId='{}'", userId);
         try {
             State.valueOf(state);
         } catch (IllegalArgumentException exception) {
