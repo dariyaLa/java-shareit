@@ -226,6 +226,31 @@ public class BookingServiceTest {
         assertEquals("Начало даты бронирования не может быть раньше текущей даты", thrown.getMessage());
     }
 
+    @Test
+    void expEndDateErlyStartDateTest() {
+        Throwable thrown = assertThrows(ValidationError.class,
+                () -> {
+                    booking.setStart(LocalDateTime.now().plusMinutes(3));
+                    booking.setEnd(LocalDateTime.now().plusMinutes(2));
+                    bookingService.save(booking);
+                });
+
+        assertEquals("Конец даты бронирования не может быть раньше даты начала", thrown.getMessage());
+    }
+
+    @Test
+    void expEndDateEйгфдыStartDateTest() {
+        Throwable thrown = assertThrows(ValidationError.class,
+                () -> {
+                    booking.setStart(LocalDateTime.now().plusMinutes(1));
+                    booking.setEnd(booking.getStart());
+                    bookingService.save(booking);
+                });
+
+        assertEquals("Конец даты бронирования не может равен дате начала", thrown.getMessage());
+    }
+
+
     @BeforeEach
     private void init() {
         createUser();
