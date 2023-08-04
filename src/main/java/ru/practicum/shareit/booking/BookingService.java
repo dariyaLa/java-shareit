@@ -149,7 +149,7 @@ public class BookingService {
             case ALL:
                 return findAll(userId, pageable);
             case FUTURE:
-                return bookingRepository.findAllByUserFutureBooking(userId, LocalDateTime.now(), pageable).stream()
+                return bookingRepository.findByUserIdAndStartIsAfter(userId, LocalDateTime.now(), pageable).stream()
                         .map(i -> {
                             ItemDto itemDto = itemService.find(i.getItemId()).get();
                             return BookingMapper.toDto(i, itemDto, user);
@@ -173,7 +173,7 @@ public class BookingService {
                         .sorted(Comparator.comparing(BookingDtoOut::getStart).reversed())
                         .collect(Collectors.toList());
             case PAST:
-                return bookingRepository.findAllByUserPastBooking(userId, LocalDateTime.now(), pageable).stream()
+                return bookingRepository.findByUserIdAndEndIsBefore(userId, LocalDateTime.now(), pageable).stream()
                         .map(i -> {
                             ItemDto itemDto = itemService.find(i.getItemId()).get();
                             return BookingMapper.toDto(i, itemDto, user);

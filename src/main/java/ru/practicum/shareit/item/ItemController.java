@@ -34,7 +34,7 @@ public class ItemController {
         log.info("Получен POST запрос к эндпоинту: /items, Строка параметров запроса: '{}'",
                 itemDto);
         Optional<UserDto> user = userService.find(userId);
-        if (userId != null && userService.find(userId).isEmpty()) {
+        if (userService.find(userId).isEmpty()) {
             throw new NotFoundData("Not found user");
         }
         itemDto.setOwner(userId);
@@ -45,9 +45,6 @@ public class ItemController {
     public ItemDto update(@RequestBody ItemDto updateData, @PathVariable int itemId, @RequestHeader(value = "${headers.userId}", required = true) Long userId) {
         log.info("Получен PATCH запрос к эндпоинту: /items, Строка параметров запроса: '{}'",
                 itemId);
-        //присвоили userId сущности, из которой будем брать данные для обновления
-        //Optional<UserDto> user = userService.find(userId);
-        //updateData.setOwner(user.get());
         Optional<ItemDto> itemFindId = itemService.find(itemId);
         //ищем, есть ли user для обновления
         if (itemFindId.isEmpty()) {
