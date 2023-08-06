@@ -1,12 +1,12 @@
 package ru.practicum.shareit.user;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+
 import java.util.Optional;
 
-
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class UserMapper {
-
-    private UserMapper() {
-    }
 
     public static Optional<UserDto> toDto(User user) {
         if (user == null) {

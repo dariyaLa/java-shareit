@@ -11,8 +11,6 @@ public interface ServiceMain<T, K> {
 
     Optional<T> find(long id);
 
-    Optional<K> find(String str);
-
     Collection<T> findAll();
 
     void delete(long id);

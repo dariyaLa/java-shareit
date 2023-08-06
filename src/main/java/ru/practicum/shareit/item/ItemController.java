@@ -9,10 +9,10 @@ import ru.practicum.shareit.item.dto.CommentsDto;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.dto.ItemMapper;
 import ru.practicum.shareit.item.model.Item;
+import ru.practicum.shareit.user.UserDto;
 import ru.practicum.shareit.user.UserServiceImpl;
 
 import javax.validation.Valid;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Objects;
@@ -33,10 +33,11 @@ public class ItemController {
 
         log.info("Получен POST запрос к эндпоинту: /items, Строка параметров запроса: '{}'",
                 itemDto);
-        itemDto.setOwner(userId);
-        if (userId != null && userService.find(userId).isEmpty()) {
+        Optional<UserDto> user = userService.find(userId);
+        if (userService.find(userId).isEmpty()) {
             throw new NotFoundData("Not found user");
         }
+        itemDto.setOwner(userId);
         return itemService.save(ItemMapper.toEntity(itemDto)).get();
     }
 
@@ -44,8 +45,6 @@ public class ItemController {
     public ItemDto update(@RequestBody ItemDto updateData, @PathVariable int itemId, @RequestHeader(value = "${headers.userId}", required = true) Long userId) {
         log.info("Получен PATCH запрос к эндпоинту: /items, Строка параметров запроса: '{}'",
                 itemId);
-        //присвоили userId сущности, из которой будем брать данные для обновления
-        updateData.setOwner(userId);
         Optional<ItemDto> itemFindId = itemService.find(itemId);
         //ищем, есть ли user для обновления
         if (itemFindId.isEmpty()) {
@@ -72,8 +71,7 @@ public class ItemController {
     @GetMapping("/{id}")
     public ItemDto find(@PathVariable int id, @RequestHeader(value = "${headers.userId}", required = false) Long userId) {
         log.debug("Получен GET запрос к эндпоинту: /items, Строка параметров запроса: '{}'", id);
-        LocalDateTime checkTime = LocalDateTime.now();
-        Optional<ItemDto> itemFindId = itemService.findWihtUserId(id, userId, checkTime);
+        Optional<ItemDto> itemFindId = itemService.findWihtUserId(id, userId);
 
         if (itemFindId.isEmpty()) {
             throw new NotFoundData("Not found data");

@@ -56,12 +56,12 @@ public class ItemService implements ServiceMain<ItemDto, Item> {
         return ItemMapper.toDto(itemRepository.findById(id).get());
     }
 
-    public Optional<ItemDto> findWihtUserId(long id, long userId, LocalDateTime dateTime) {
-        List<CommentsDto> commentsDtoList;
+    public Optional<ItemDto> findWihtUserId(long id, long userId) {
         Optional<Item> item = itemRepository.findById(id);
         if (item.isEmpty()) {
             throw new NotFoundData("Not found item");
         }
+        //если user является владельцем item, выводим с бронями, иначе без броней
         if (item.get().getOwner() == userId) {
             Booking lastBooking = bookingRepository.findLastBooking(item.get().getId());
             Booking nextBooking = bookingRepository.findNextBooking(item.get().getId());
@@ -78,10 +78,6 @@ public class ItemService implements ServiceMain<ItemDto, Item> {
     }
 
 
-    @Override
-    public Optional<Item> find(String str) {
-        return Optional.empty();
-    }
 
     @Override
     public Collection<ItemDto> findAll() {
