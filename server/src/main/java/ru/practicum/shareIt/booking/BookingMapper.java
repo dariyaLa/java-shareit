@@ -1,0 +1,49 @@
+package ru.practicum.shareIt.booking;
+
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+import ru.practicum.shareIt.items.ItemDto;
+import ru.practicum.shareIt.users.UserDto;
+
+import java.util.Optional;
+
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class BookingMapper {
+
+    public static Optional<BookingDto> toDto(Booking booking) {
+        if (booking == null) {
+            return Optional.empty();
+        }
+        return Optional.ofNullable(BookingDto.builder()
+                .id(booking.getId())
+                .start(booking.getStart())
+                .end(booking.getEnd())
+                .itemId(booking.getItemId())
+                .bookerId(booking.getUserId())
+                .state(booking.getState())
+                .build());
+    }
+
+    public static Booking toEntity(BookingDto dto) {
+        return Booking.builder()
+                .id(dto.getId())
+                .start(dto.getStart())
+                .end(dto.getEnd())
+                .itemId(dto.getItemId())
+                .userId(dto.getBookerId())
+                .state(dto.getState())
+                .build();
+    }
+
+    public static BookingDtoOut toDto(Booking booking, ItemDto item, UserDto user) {
+        return BookingDtoOut.builder()
+                .id(booking.getId())
+                .start(booking.getStart())
+                .end(booking.getEnd())
+                .item(ItemDto.builder().id(item.getId()).name(item.getName()).build())
+                .booker(UserDto.builder().id(user.getId()).build())
+                .status(booking.getState())
+                .build();
+    }
+
+}
