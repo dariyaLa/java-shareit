@@ -15,7 +15,7 @@ import java.util.stream.Collectors;
 public class UserServiceImpl implements ServiceMain<UserDto, User> {
 
     @Autowired
-    private  UserRepository userRepository;
+    private UserRepository userRepository;
 
 
     @Override
