@@ -42,7 +42,7 @@ class ItemControllerTest {
 
     @Test
     @SneakyThrows
-    void createWithoutHeaderUser() {
+    void createWithoutHeaderUserTest() {
         String json = mapper.writeValueAsString(itemDto);
         mvc.perform(post(URL)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -53,7 +53,19 @@ class ItemControllerTest {
 
     @Test
     @SneakyThrows
-    void update() {
+    void createItemTest() {
+        String json = mapper.writeValueAsString(itemDto);
+        mvc.perform(post(URL)
+                        .header(HEADER_USER, "1")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(json))
+                .andDo(print())
+                .andExpect(status().is2xxSuccessful());
+    }
+
+    @Test
+    @SneakyThrows
+    void updateTest() {
         String json = mapper.writeValueAsString(itemDto);
         mvc.perform(patch(URL + "/1")
                         .header(HEADER_USER, "1")
@@ -65,7 +77,7 @@ class ItemControllerTest {
 
     @Test
     @SneakyThrows
-    void findAll() {
+    void findAIdTest() {
         mvc.perform(get(URL + "/1")
                         .header(HEADER_USER, "1")
                         .contentType(MediaType.APPLICATION_JSON))
@@ -75,7 +87,27 @@ class ItemControllerTest {
 
     @Test
     @SneakyThrows
-    void createComment() {
+    void findAAllTest() {
+        mvc.perform(get(URL)
+                        .header(HEADER_USER, "1")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().is2xxSuccessful());
+    }
+
+    @Test
+    @SneakyThrows
+    void searchItemTest() {
+        mvc.perform(get(URL + "/search?text=оТверТ")
+                        .header(HEADER_USER, "1")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().is2xxSuccessful());
+    }
+
+    @Test
+    @SneakyThrows
+    void createCommentTest() {
         String json = mapper.writeValueAsString(commentsDto);
         mvc.perform(post(URL + "/1/comment")
                         .header(HEADER_USER, "1")

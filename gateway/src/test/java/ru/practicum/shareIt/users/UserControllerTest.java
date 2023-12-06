@@ -36,7 +36,7 @@ class UserControllerTest {
     private UserDto userEmailFail;
 
     @Test
-    void shouldCreateMockMvc() {
+    void shouldCreateMockMvcTest() {
         assertNotNull(mvc);
     }
 
@@ -54,7 +54,18 @@ class UserControllerTest {
 
     @Test
     @SneakyThrows
-    void update() {
+    void createUserTest() {
+        String json = mapper.writeValueAsString(userDto);
+        mvc.perform(post(URL)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(json))
+                .andDo(print())
+                .andExpect(status().is2xxSuccessful());
+    }
+
+    @Test
+    @SneakyThrows
+    void updateTest() {
         String json = mapper.writeValueAsString(userDto);
         mvc.perform(patch(URL + "/1")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -65,7 +76,7 @@ class UserControllerTest {
 
     @Test
     @SneakyThrows
-    void find() {
+    void findTest() {
         mvc.perform(get(URL + "/1")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
@@ -74,7 +85,16 @@ class UserControllerTest {
 
     @Test
     @SneakyThrows
-    void deleteUser() {
+    void findAllTest() {
+        mvc.perform(get(URL)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().is2xxSuccessful());
+    }
+
+    @Test
+    @SneakyThrows
+    void deleteUserTest() {
         mvc.perform(delete(URL + "/1"))
                 .andDo(print())
                 .andExpect(status().is2xxSuccessful());

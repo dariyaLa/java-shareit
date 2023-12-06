@@ -44,10 +44,11 @@ class ItemRequestControllerTest {
     private UserDto userDto;
     private CommentsDto commentsDto;
     private ItemRequestDto itemRequestDtoWithoutDesc;
+    private ItemRequestDto itemRequestDto;
 
     @Test
     @SneakyThrows
-    void createItemReqWithoutDesc() {
+    void createItemReqWithoutDescTest() {
         String json = mapper.writeValueAsString(itemRequestDtoWithoutDesc);
         mvc.perform(post(URL)
                         .header(HEADER_USER, "1")
@@ -59,7 +60,19 @@ class ItemRequestControllerTest {
 
     @Test
     @SneakyThrows
-    void findAllByUserId() {
+    void createItemReqTest() {
+        String json = mapper.writeValueAsString(itemRequestDto);
+        mvc.perform(post(URL)
+                        .header(HEADER_USER, "1")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(json))
+                .andDo(print())
+                .andExpect(status().is2xxSuccessful());
+    }
+
+    @Test
+    @SneakyThrows
+    void findAllByUserIdTest() {
         mvc.perform(get(URL)
                         .header(HEADER_USER, "1")
                         .contentType(MediaType.APPLICATION_JSON))
@@ -69,8 +82,18 @@ class ItemRequestControllerTest {
 
     @Test
     @SneakyThrows
-    void findById() {
+    void findByIdTest() {
         mvc.perform(get(URL + "/1")
+                        .header(HEADER_USER, "1")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().is2xxSuccessful());
+    }
+
+    @Test
+    @SneakyThrows
+    void findByAllTest() {
+        mvc.perform(get(URL + "/all")
                         .header(HEADER_USER, "1")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
@@ -111,6 +134,13 @@ class ItemRequestControllerTest {
         itemRequestDtoWithoutDesc = ItemRequestDto.builder()
                 .id(1)
                 .description(null)
+                .requestor(userDto.getId())
+                .created(LocalDateTime.now())
+                .items(new ArrayList<>())
+                .build();
+        itemRequestDto = ItemRequestDto.builder()
+                .id(1)
+                .description("test")
                 .requestor(userDto.getId())
                 .created(LocalDateTime.now())
                 .items(new ArrayList<>())

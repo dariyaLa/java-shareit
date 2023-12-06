@@ -41,7 +41,7 @@ class BookingControllerTest {
 
     @Test
     @SneakyThrows
-    void createBookingInPast() {
+    void createBookingInPastTest() {
         String json = mapper.writeValueAsString(bookingDtoStartNull);
         mvc.perform(post(URL)
                         .header(HEADERS_USER, "1")
@@ -53,7 +53,19 @@ class BookingControllerTest {
 
     @Test
     @SneakyThrows
-    void update() {
+    void createBookingTest() {
+        String json = mapper.writeValueAsString(bookingDto);
+        mvc.perform(post(URL)
+                        .header(HEADERS_USER, "1")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(json))
+                .andDo(print())
+                .andExpect(status().is2xxSuccessful());
+    }
+
+    @Test
+    @SneakyThrows
+    void updateTest() {
         String json = mapper.writeValueAsString(bookingDto);
         mvc.perform(patch(URL + "/1?approved=true")
                         .header(HEADERS_USER, "1")
@@ -65,7 +77,7 @@ class BookingControllerTest {
 
     @Test
     @SneakyThrows
-    void findAll() {
+    void findIdTest() {
         mvc.perform(get(URL + "/1")
                         .header(HEADERS_USER, "1")
                         .contentType(MediaType.APPLICATION_JSON))
@@ -75,7 +87,17 @@ class BookingControllerTest {
 
     @Test
     @SneakyThrows
-    void findInvalidState() {
+    void findAllTest() {
+        mvc.perform(get(URL)
+                        .header(HEADERS_USER, "1")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().is2xxSuccessful());
+    }
+
+    @Test
+    @SneakyThrows
+    void findInvalidStateTest() {
         mvc.perform(get(URL + "?state=qwert")
                         .header(HEADERS_USER, "1")
                         .contentType(MediaType.APPLICATION_JSON))
@@ -85,12 +107,22 @@ class BookingControllerTest {
 
     @Test
     @SneakyThrows
-    void findAllOwner() {
+    void findAllOwnerTest() {
         mvc.perform(get(URL + "/owner")
                         .header(HEADERS_USER, "1")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().is2xxSuccessful());
+    }
+
+    @Test
+    @SneakyThrows
+    void findAllOwnerStateTest() {
+        mvc.perform(get(URL + "/owner?state=qwert")
+                        .header(HEADERS_USER, "1")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isInternalServerError());
     }
 
     private void createTestData() {
