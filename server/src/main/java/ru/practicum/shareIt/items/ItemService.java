@@ -78,7 +78,7 @@ public class ItemService implements ru.practicum.shareIt.ServiceMain<ItemDto, It
                 log.info("Выводим размер массива брони " + lastAndNextBooking.size());
             } else {
 
-                lastAndNextBooking.add(null);
+                    lastAndNextBooking.add(null);
 
             }
             //log.info("Выводим 0 индекс листа " + lastAndNextBooking.get(0));
