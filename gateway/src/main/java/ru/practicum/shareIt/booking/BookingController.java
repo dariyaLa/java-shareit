@@ -16,7 +16,7 @@ import javax.validation.constraints.Min;
 @PropertySource("classpath:application.properties")
 @AllArgsConstructor
 @Validated
-public class BookingControllerClient {
+public class BookingController {
 
     private final BookingClient bookingClient;
 
